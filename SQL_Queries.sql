@@ -1,17 +1,25 @@
 
 -- Fremmed nøgler
-alter table dbo.fact_udbud add constraint FK_fact_lot
-	foreign key (objekt_id) references dbo.dim_lot(objekt_id);
+ALTER TABLE dbo.fact_udbud
+  ADD CONSTRAINT fk_fact_lot FOREIGN KEY (objekt_id) REFERENCES
+  dbo.dim_lot(objekt_id);
 
-alter table dbo.fact_udbud add constraint FK_fact_auktion
-	foreign key (auktion_id) references dbo.dim_auktion(auktion_id);
+ALTER TABLE dbo.fact_udbud
+  ADD CONSTRAINT fk_fact_auktion FOREIGN KEY (auktion_id) REFERENCES
+  dbo.dim_auktion(auktion_id);
 
-alter table dbo.fact_udbud add constraint FK_fact_dato
-	foreign key (auktionsdato_key) references dbo.dim_dato(date_key);
+ALTER TABLE dbo.fact_udbud
+  ADD CONSTRAINT fk_fact_dato FOREIGN KEY (auktionsdato_key) REFERENCES
+  dbo.dim_dato(date_key);
 
-create index ix_fact_objekt_id on dbo.fact_udbud(objekt_id);
-create index ix_fact_auktion_id on dbo.fact_udbud(auktion_id);
-create index ix_fact_dato_key on dbo.fact_udbud(auktionsdato_key);
+CREATE INDEX ix_fact_objekt_id
+  ON dbo.fact_udbud(objekt_id);
+
+CREATE INDEX ix_fact_auktion_id
+  ON dbo.fact_udbud(auktion_id);
+
+CREATE INDEX ix_fact_dato_key
+  ON dbo.fact_udbud(auktionsdato_key); 
 
 
 -- Rækketal – forvent 184377 / 158930 / 874 / 2038
@@ -45,44 +53,53 @@ SELECT COUNT(*) AS antal_lots,
 FROM dbo.fact_udbud;
 GO
 
+-- KPI Dekomponering	
 CREATE OR ALTER VIEW dbo.vw_kpi_dekomponering AS
 
-with udbud as
-(
-select 
-    d.aar,
-    a.auktionstype as kanal,
-    l.hovedkategori,
-    l.underkategori,
-    f.solgt_flag,
-    f.min_vurdering,
-    cast((f.min_vurdering + f.max_vurdering) / 2.0 as decimal(10,2)) as midt_vurdering,
-    f.hammerslag,
-    cast(f.hammerslag * f.salaer_sats as decimal(10,2)) as salaer_kr
-from fact_udbud as f
-join dim_lot as l on f.objekt_id = l.objekt_id
-join dim_auktion as a on f.auktion_id = a.auktion_id
-join dim_dato as d on f.auktionsdato_key = d.date_key
-)
-select
-    aar,
-    kanal,
-    hovedkategori,
-    underkategori,
-    count(*) as antal_udbud,
-    sum(cast(solgt_flag as INT)) as antal_solgt,
-    cast(avg(cast(solgt_flag as decimal(6,2))) as decimal(6,2)) as sell_through,
-    sum(case when solgt_flag = 1 then hammerslag END) as sum_hammerslag,
-    sum(case when solgt_flag = 1 then min_vurdering END) as sum_min_vurd,
-    sum(case when solgt_flag = 1 then midt_vurdering END) as sum_midt_vurd,
-    sum(salaer_kr) as sum_salaer_kr,
-    cast(sum(case when solgt_flag = 1 then hammerslag END) * 1.0 /
-    nullif(sum(case when solgt_flag = 1 then midt_vurdering END),0) as decimal(6,2)) as realiserings_grad
-from udbud
-group by aar, kanal, hovedkategori, underkategori
--- order by aar asc
+WITH udbud AS
+  (SELECT d.aar,
+          a.auktionstype AS kanal,
+          l.hovedkategori,
+          l.underkategori,
+          f.solgt_flag,
+          f.min_vurdering,
+          cast((f.min_vurdering + f.max_vurdering) / 2.0 AS decimal(10, 2)) AS midt_vurdering,
+          f.hammerslag,
+          cast(f.hammerslag * f.salaer_sats AS decimal(10, 2)) AS salaer_kr
+   FROM fact_udbud AS f
+   JOIN dim_lot AS l ON f.objekt_id = l.objekt_id
+   JOIN dim_auktion AS a ON f.auktion_id = a.auktion_id
+   JOIN dim_dato AS d ON f.auktionsdato_key = d.date_key)
+SELECT aar,
+       kanal,
+       hovedkategori,
+       underkategori,
+       count(*) AS antal_udbud,
+       sum(cast(solgt_flag AS INT)) AS antal_solgt,
+       cast(avg(cast(solgt_flag AS decimal(6, 2))) AS decimal(6, 2)) AS sell_through,
+       sum(CASE
+               WHEN solgt_flag = 1 THEN hammerslag
+           END) AS sum_hammerslag,
+       sum(CASE
+               WHEN solgt_flag = 1 THEN min_vurdering
+           END) AS sum_min_vurd,
+       sum(CASE
+               WHEN solgt_flag = 1 THEN midt_vurdering
+           END) AS sum_midt_vurd,
+       sum(salaer_kr) AS sum_salaer_kr,
+       cast(sum(CASE
+                    WHEN solgt_flag = 1 THEN hammerslag
+                END) * 1.0 / nullif(sum(CASE
+                                            WHEN solgt_flag = 1 THEN midt_vurdering
+                                        END), 0) AS decimal(6, 2)) AS realiserings_grad
+FROM udbud
+GROUP BY aar,
+         kanal,
+         hovedkategori,
+         underkategori -- order by aar asc
 GO
 
+-- Genbuds analyse
 CREATE OR ALTER VIEW dbo.vw_genudbud AS
 WITH forloeb AS (
     SELECT
@@ -132,7 +149,7 @@ SELECT
 FROM forloeb;
 GO
 
-
+-- Værdiklasse matrix
 CREATE OR ALTER VIEW dbo.vw_vaerdiklasse_matrix AS
 WITH solgte AS (
     SELECT
