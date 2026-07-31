@@ -6,13 +6,13 @@ Værktøjer: SQL Server (SSMS) · Power BI Desktop (DAX)
 
 ## Om datasættet
 
-Datasættet er selvgenereret og syntetisk — bygget på min egen domæneviden om, hvordan et auktionshus fungerer (indlevering, vurdering, udbud, genudbud, salær, live vs. online). Det simulerer et auktionshus' udbud og salg over 5,5 år (2021 – juli 2026) og består af fire filer i et dimensionelt stjerneskema:
+Datasættet er selvgenereret og syntetisk. Det er bygget på min egen domæneviden om, hvordan et auktionshus fungerer (indlevering, vurdering, udbud, genudbud, salær, live vs. online). Det simulerer et auktionshus' udbud og salg over 5,5 år (2021 – juli 2026) og består af fire filer i et dimensionelt stjerneskema:
 
-Tabel	Rækker	Indhold
-fact_udbud	~184.000	Grain: ét lot udbudt på én auktion
-dim_lot	~159.000	Det fysiske objekt (kategori, mål, stand, datoer)
-dim_auktion	874	Auktionen (live/online, dato, event)
-dim_dato	2.038	Kalendertabel
+Filer
+- fact_udbud	~184.000	Grain: ét lot udbudt på én auktion
+- dim_lot	~159.000	Det fysiske objekt (kategori, mål, stand, datoer)
+- dim_auktion	874	Auktionen (live/online, dato, event)
+- dim_dato	2.038	Kalendertabel
 
 Data stammer ikke fra en rigtig virksomhed. Færdighederne (modellering, SQL, DAX) er lige gyldige uanset — pointen er metoden, ikke tallene.
 
@@ -49,6 +49,9 @@ Matrixen viser, hvor objekter vurderet i én prisklasse (rækker) faktisk blev r
 
 De fleste lots sælger i første forsøg, men en betydelig del af de usolgte kommer på igen og sælger i anden eller tredje omgang. Det er netop derfor, sell-through pr. objekt (86 %) er markant højere end pr. udbud (74 %) — genudbud genskaber omkring 12 procentpoint, der ellers var tabt. Anbefaling: genudbud, og især kanalskift til online efter et usolgt forsøg, bør formaliseres som proces, da det er beviseligt at der er værdi at hente.
 
+## Filer i dette repo
 
-
-
+- `Rapport.pdf` - rapport med indsigt i process, styrker og brug af AI
+- `SQL_Queries` - alle SQL queries brugt til validering, nøgler, analyse og views
+- `Dashboard_Datamodel` - PowerBI fil med det interaktive dashboard, DAX measures og selve datamodellen
+- `Datasæt` - alle CSV filerne fra det syntetiske datasæt
