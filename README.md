@@ -1,6 +1,6 @@
 # Auktionsdata – SQL & Power BI
 
-End-to-end analyseprojekt, der demonstrerer hele kæden fra rå data til interaktivt beslutningsværktøj: rå CSV → SQL-datamodel → analytiske views → Power BI-dashboard. Målet var at vise, at jeg kan bruge SQL og Power BI hver for sig og forbinde dem meningsfuldt.
+End-to-end analyseprojekt, der demonstrerer hele kæden fra rå data til interaktivt beslutningsværktøj: rå CSV → SQL-datamodel → analytiske views → Power BI-dashboard.
 
 Værktøjer: SQL Server (SSMS) · Power BI Desktop (DAX)
 
