@@ -24,10 +24,10 @@ Modellen i Power BI: faktatabellen fact_udbud i midten med mange-til-én-relatio
 
 Inden analysen kontrollerede jeg datagrundlaget:
 
-Rækketal pr. tabel matcher forventningen.
-Nul forældreløse fremmednøgler — alle nøgler i faktatabellen findes i deres dimension.
-Forretningsregel holder 100 %: solgte lots har hammerslag, usolgte har NULL.
-Delåret 2026 blev bevidst afgrænset i dashboardet (2021-2025), så en tidstrend ikke forvrænges af manglende måneder.
+- Rækketal pr. tabel matcher forventningen.
+- Nul forældreløse fremmednøgler = alle nøgler i faktatabellen findes i deres dimension.
+- Forretningsregel holder 100 %: solgte lots har hammerslag, usolgte har NULL.
+- Delåret 2026 blev bevidst afgrænset i dashboardet (2021-2025), så en tidstrend ikke forvrænges af manglende måneder.
 
 ## Indsigter og anbefalinger
 
